@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.test2.student.dao.DemoStuScoreDao">
+    
+	<sql id="demoStuScoreColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.stu_id AS "stuId",
+		a.stu_score AS "stuScore",
+		a.stu_name AS "stuName",
+		a.class_id AS "classId"
+	</sql>
+	
+	<sql id="demoStuScoreJoins">
+	</sql>
+    
+	<select id="get" resultType="DemoStuScore">
+		SELECT 
+			<include refid="demoStuScoreColumns"/>
+		FROM demo_stu_score a
+		<include refid="demoStuScoreJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DemoStuScore">
+		SELECT 
+			<include refid="demoStuScoreColumns"/>
+		FROM demo_stu_score a
+		<include refid="demoStuScoreJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DemoStuScore">
+		SELECT 
+			<include refid="demoStuScoreColumns"/>
+		FROM demo_stu_score a
+		<include refid="demoStuScoreJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO demo_stu_score(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			stu_id,
+			stu_score,
+			stu_name,
+			class_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{stuId},
+			#{stuScore},
+			#{stuName},
+			#{classId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE demo_stu_score SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			stu_id = #{stuId},
+			stu_score = #{stuScore},
+			stu_name = #{stuName},
+			class_id = #{classId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE demo_stu_score SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.test2.student.dao.DemoStuInfoDao">
+    
+	<sql id="demoStuInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.stu_name AS "stuName",
+		a.stu_id AS "stuId",
+		a.stu_classname AS "stuClassname",
+		a.stu_sex AS "stuSex",
+		a.stu_age AS "stuAge",
+		a.stu_classid AS "stuClassid"
+	</sql>
+	
+	<sql id="demoStuInfoJoins">
+		LEFT JOIN demo_class b ON b.id = a.stu_classid
+	</sql>
+    
+	<select id="get" resultType="DemoStuInfo">
+		SELECT 
+			<include refid="demoStuInfoColumns"/>
+		FROM demo_stu_info a
+		<include refid="demoStuInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DemoStuInfo">
+		SELECT 
+			<include refid="demoStuInfoColumns"/>
+		FROM demo_stu_info a
+		<include refid="demoStuInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="stuName != null and stuName != ''">
+				AND a.stu_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{stuName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{stuName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{stuName},'%')</if>
+			</if>
+			<if test="stuClassid != null and stuClassid != ''">
+				AND a.stu_classid = #{stuClassid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DemoStuInfo">
+		SELECT 
+			<include refid="demoStuInfoColumns"/>
+		FROM demo_stu_info a
+		<include refid="demoStuInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO demo_stu_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			stu_name,
+			stu_id,
+			stu_classname,
+			stu_sex,
+			stu_age,
+			stu_classid
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{stuName},
+			#{stuId},
+			#{stuClassname},
+			#{stuSex},
+			#{stuAge},
+			#{stuClassid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE demo_stu_info SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			stu_name = #{stuName},
+			stu_id = #{stuId},
+			stu_classname = #{stuClassname},
+			stu_sex = #{stuSex},
+			stu_age = #{stuAge},
+			stu_classid = #{stuClassid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE demo_stu_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE stu_classid = #{stuClassid}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>
