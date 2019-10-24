@@ -38,9 +38,10 @@ import java.util.Map;
 @RequestMapping(value = "${adminPath}/test2/demoClass")
 public class DemoClassController extends BaseController {
 
+
+
 	@Autowired
 	private DemoClassService demoClassService;
-	
 	@ModelAttribute
 	public DemoClass get(@RequestParam(required=false) String id) {
 		DemoClass entity = null;
